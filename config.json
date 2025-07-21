@@ -1,0 +1,36 @@
+{
+    "btn1": {
+        "key": [
+            "d",
+            "e",
+            "a",
+            "f",
+            "d",
+            "g",
+            "return",
+            "left shift",
+            "backspace"
+        ],
+        "mode": "MACRO"
+    },
+    "btn2": {
+        "key": "F9",
+        "mode": "TOUCHE"
+    },
+    "btn3": {
+        "key": "F3",
+        "mode": "TOUCHE"
+    },
+    "btn4": {
+        "key": "F4",
+        "mode": "TOUCHE"
+    },
+    "btn5": {
+        "key": "F5",
+        "mode": "TOUCHE"
+    },
+    "btn6": {
+        "key": "F6",
+        "mode": "TOUCHE"
+    }
+}
