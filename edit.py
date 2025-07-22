@@ -17,6 +17,7 @@ class Edit(dropDown):
         self.dropdown = dropDown(screen,self.rect.topright[0],self.rect.topright[1],"MODE :",("TOUCHE","MACRO"),mode)
 
         self.save_btn = Button(self.screen,self.rect.bottomleft[0],self.rect.bottomleft[1],"SAVE","white",30)
+        self.back_btn = Button(self.screen,self.save_btn.rect.topright[0]+10,self.save_btn.rect.topright[1],"BACK","white",30)
 
         self.btn_touche = Button(self.screen,0,0,"Edit key","white",40,)
         self.edit_touche = False
@@ -49,7 +50,8 @@ class Edit(dropDown):
         self.dropdown.draw()
         self.dropdown.detect()
         
-        pygame.draw.rect(self.screen,"white",(self.dropdown.Rect[0],self.dropdown.Rect[1]+50,300,10))
+        self.sep_rect = pygame.Rect(self.dropdown.Rect[0],self.dropdown.Rect[1]+50,300,10)
+        pygame.draw.rect(self.screen,"white",self.sep_rect)
 
         self.data_font = pygame.font.Font("freesansbold.ttf", 20)
         data_text = self.data_font.render("Mode : " + self.dropdown.current_option.text , True, (255,255,255))
@@ -65,7 +67,9 @@ class Edit(dropDown):
            self.draw_macro(key)
            self.edit_touche = False
 
-    
+        self.back_btn.draw()
+        if self.back_btn.detect():
+            manager.pop_menu()
 
         self.save_btn.draw()
         if self.save_btn.detect():
@@ -111,65 +115,67 @@ class Edit(dropDown):
 
     def draw_macro(self,key):
         
-        self.btn_macro.x = self.dropdown.Rect[0]
-        self.btn_macro.y = self.dropdown.Rect[1]+70
-        self.btn_macro.draw()
+        # self.btn_macro.x = self.dropdown.Rect[0]
+        # self.btn_macro.y = self.dropdown.Rect[1]+70
+        # self.btn_macro.draw()
         
-        if self.btn_macro.detect():
-            self.edit_macro = True
+        # if self.btn_macro.detect():
+        #     self.edit_macro = True
         
-        if self.edit_macro:
+        
     
-            self.dropdown_macro.x = self.btn_macro.rect.bottomleft[0]
-            self.dropdown_macro.y = self.btn_macro.rect.bottomleft[1]+10
-            self.dropdown_macro.draw()
-            self.dropdown_macro.detect()
+        self.dropdown_macro.x = self.dropdown.Rect[0]
+        self.dropdown_macro.y = self.dropdown.Rect[1]+70
+        self.dropdown_macro.draw()
+        self.dropdown_macro.detect()
 
-            if self.dropdown_macro.current_option.text == "TEXT":
-                self.test.rect.x = self.dropdown_macro.Rect.bottomleft[0]
-                self.test.rect.y = self.dropdown_macro.Rect.bottomleft[1]+40
+        if self.dropdown_macro.current_option.text == "TEXT":
+            self.test.rect.x = self.dropdown_macro.Rect.bottomleft[0]
+            self.test.rect.y = self.dropdown_macro.Rect.bottomleft[1]+40
 
-                self.test.update()
-                self.test.draw()
-                result = self.test.handle_text_input(key)
-                if  result != None:
-                    if self.editing == None:
-                        self.macro_sequence.append(result)
-                    else:
-                        self.macro_sequence[self.editing] = result
-                        self.editing = None
-
-            if self.dropdown_macro.current_option.text == "ACTION":
-                data_text = self.data_font.render("Press Key...", True, (255,255,255))
-                textRect = data_text.get_rect(topleft=(self.dropdown_macro.Rect.bottomleft[0],self.dropdown_macro.Rect.bottomleft[1]+40))
-                self.screen.blit(data_text, textRect)
-                if key != None:
-                    if self.editing == None:
-                        self.macro_sequence.append(key)
-                        
-                    else:
-                        self.macro_sequence[self.editing] = key
-                        self.editing = None
-                        
-            
-
-            if self.dropdown_macro.current_option.text == "DELETE":
-                if self.editing != None:
-                    self.macro_sequence.pop(self.editing)
+            self.test.update()
+            self.test.draw()
+            result = self.test.handle_text_input(key)
+            if  result != None:
+                if self.editing == None:
+                    self.macro_sequence.append(result)
+                else:
+                    self.macro_sequence[self.editing] = result
+                    
                     self.editing = None
+                self.test.reset()
 
-        else:
-            self.edit_touche = "Edit Sequence"
+        if self.dropdown_macro.current_option.text == "ACTION":
+            data_text = self.data_font.render("Press Key...", True, (255,255,255))
+            textRect = data_text.get_rect(topleft=(self.dropdown_macro.Rect.bottomleft[0],self.dropdown_macro.Rect.bottomleft[1]+40))
+            self.screen.blit(data_text, textRect)
+            if key != None:
+                if self.editing == None:
+                    self.macro_sequence.append(key)
+                    
+                else:
+                    self.macro_sequence[self.editing] = key
+                    self.editing = None
+                    
+        
+
+        if self.dropdown_macro.current_option.text == "DELETE":
+            if self.editing != None:
+                self.macro_sequence.pop(self.editing)
+                self.editing = None
+
+   
 
 
 
-        x = self.btn_macro.rect.topright[0] + 20
-        y = self.btn_macro.rect.topright[1]
+        x = self.sep_rect.topright[0]
+        y = self.sep_rect.topright[1]
         rect = pygame.Rect((x,y,198,25))
         self.rect_macro_sequence = []
         for i,j in enumerate(self.macro_sequence):
-
+            # print(i, self.editing)
             if self.editing == i:
+                
                 self.rect_macro_sequence.append(pygame.draw.rect(self.screen,"green",rect,width=1))
             else :
                 self.rect_macro_sequence.append(pygame.draw.rect(self.screen,"white",rect,width=1))
@@ -183,12 +189,14 @@ class Edit(dropDown):
 
 
         for i in range(len(self.rect_macro_sequence)):
-        
+          
+            
             pos = pygame.mouse.get_pos()
             if self.rect_macro_sequence[i].collidepoint(pos):
                 if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
-                    self.editing = self.macro_sequence.index(self.macro_sequence[i])
-                    print(self.macro_sequence.index(self.macro_sequence[i]))
+                   
+                    self.editing = i
+                    # print(self.editing)
                     self.clicked = True
 			
             if pygame.mouse.get_pressed()[0] == 0:

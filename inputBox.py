@@ -50,7 +50,9 @@ class InputBox:
             self.text += key_str
         self.txt_surface = self.font.render(self.text, True, "white")
 
-
+    def reset(self):
+        self.text = ""
+        self.txt_surface = self.font.render(self.text, True, "white")
 
     def draw(self):
         text_y = self.rect.y + (self.rect.height - self.txt_surface.get_height()) // 2

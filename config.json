@@ -1,7 +1,10 @@
 {
     "btn1": {
-        "key": "f10",
-        "mode": "TOUCHE"
+        "key": [
+            "nigga",
+            "return"
+        ],
+        "mode": "MACRO"
     },
     "btn2": {
         "key": [
