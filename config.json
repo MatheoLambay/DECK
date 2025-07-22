@@ -1,29 +1,36 @@
 {
     "btn1": {
+        "key": "f10",
+        "mode": "TOUCHE"
+    },
+    "btn2": {
         "key": [
-            "d",
-            "e",
-            "a",
-            "f",
-            "d",
-            "g",
-            "return",
-            "left shift",
-            "backspace"
+            "t",
+            "caca",
+            "return"
         ],
         "mode": "MACRO"
     },
-    "btn2": {
-        "key": "F9",
-        "mode": "TOUCHE"
-    },
     "btn3": {
-        "key": "F3",
+        "key": "y",
         "mode": "TOUCHE"
     },
     "btn4": {
-        "key": "F4",
-        "mode": "TOUCHE"
+        "key": [
+            "b",
+            "1",
+            "2",
+            "4",
+            "1",
+            "5",
+            "1",
+            "2",
+            "3",
+            "4",
+            "b",
+            "escape"
+        ],
+        "mode": "MACRO"
     },
     "btn5": {
         "key": "F5",

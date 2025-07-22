@@ -79,7 +79,6 @@ menu_manager.push_menu(mainMenu(menu_manager.screen))
 
 
 
-
 run = True
 while run:
     key = None

@@ -8,6 +8,7 @@ from button import Button
 import time
 import os
 import sys
+from time import sleep
 
 class mainMenu:
     def __init__(self,screen):
@@ -66,28 +67,105 @@ class mainMenu:
         self.last_try_time = 0
         self.retry_interval = 2  
 
+        self.last_time = 0
+        self.interval = 100
+
+
+        self.special_keys = [
+            # Lettres
+            "a","b","c","d","e","f","g","h","i","j","k","l","m",
+            "n","o","p","q","r","s","t","u","v","w","x","y","z",
+
+            # Chiffres
+            "0","1","2","3","4","5","6","7","8","9",
+
+            # Touches spéciales
+            "enter", "return",
+            "shift", "shift left", "shift right",
+            "ctrl", "ctrl left", "ctrl right",
+            "alt", "alt left", "alt right",
+            "tab",
+            "space",
+            "backspace",
+            "delete",
+            "esc", "escape",
+            "caps lock",
+            "up", "down", "left", "right",
+            "page up", "page down",
+            "home", "end", "insert",
+            "print screen",
+            "scroll lock",
+            "pause",
+            "num lock",
+            "menu",
+            "windows",
+            "command",
+            "option",
+
+            # Touches de fonction
+            "f1","f2","f3","f4","f5","f6","f7","f8","f9","f10","f11","f12",
+
+            # Ponctuation et symboles
+            "space", "enter", "tab",
+            "minus", "equal",
+            "left bracket", "right bracket",
+            "backslash",
+            "semicolon", "apostrophe",
+            "grave",        # touche "accent grave" (`)
+            "comma", "dot", "slash",
+
+            # Pavé numérique (numpad)
+            "num 0", "num 1", "num 2", "num 3", "num 4", "num 5", "num 6", "num 7", "num 8", "num 9",
+            "num decimal", "num divide", "num multiply", "num subtract", "num add", "num enter"
+        ]
+
+
+
+
         
 
     def detect_serial(self):
         now = time.time()
+
         if now - self.last_try_time < self.retry_interval:
             return False
         self.last_try_time = now
 
+        # Ferme proprement le port s'il est encore ouvert
+        if self.ser:
+            try:
+                if self.ser.is_open:
+                    print("🔌 Fermeture du port série précédent.")
+                    self.ser.close()
+            except Exception as e:
+                print(f"⚠️ Erreur lors de la fermeture du port précédent : {e}")
+            self.ser = None
+            self.ser_connected = False
+
+        print("🔍 Recherche de ports série...")
         look_ports = comports()
+
         for p in look_ports:
-            if "CP210" in p.description:
+            desc = getattr(p, 'description', '')
+            device = getattr(p, 'device', '')
+            print(f"➡️ Port détecté : {desc} ({device})")
+
+            if "CP210" in desc:
                 try:
-                    self.ser = serial.Serial(str(p.device), 115200, timeout=0)
+                    print(f"📡 Connexion au port {device}...")
+                    self.ser = serial.Serial(device, 115200, timeout=1)
                     self.ser_connected = True
+                    print(f"✅ Connecté à {device}")
                     return True
                 except serial.SerialException as e:
-                    print(f"Erreur d'ouverture du port {p.device}: {e}")
-                    self.ser_connected = False
+                    print(f"❌ Erreur d'ouverture du port {device} : {e}")
                     self.ser = None
+                    self.ser_connected = False
                     return False
-        self.ser_connected = False
+
+        print("⚠️ Aucun port CP210 trouvé.")
         self.ser = None
+        self.ser_connected = False
         return False
             
                 
@@ -126,27 +204,27 @@ class mainMenu:
                      
             try:
                 if self.ser.in_waiting > 0:
-                    
+                    current_time = pygame.time.get_ticks()
+                
                     ligne = self.ser.readline().decode('utf-8').strip()
                     if ligne in self.btns:
                         if self.rectangles[self.btns.index(ligne)].mode == "TOUCHE":
                             keyboard.press_and_release(self.rectangles[self.btns.index(ligne)].command)
+
                         elif self.rectangles[self.btns.index(ligne)].mode == "MACRO":
                             for i in self.rectangles[self.btns.index(ligne)].command:
-                                keyboard.press_and_release(i)
-                    # if ligne == "btn1":
-                    #     index = 0
-                    #     keyboard.press_and_release(self.rectangles[0].command)
-                    # elif ligne == "btn2":
-                    #     keyboard.press_and_release(self.rectangles[1].command)
-                    # elif ligne == "btn3":
-                    #     keyboard.press_and_release(self.rectangles[2].command)
-                    # elif ligne == "btn4":
-                    #     keyboard.press_and_release(self.rectangles[3].command)
-                    # elif ligne == "btn5":
-                    #     keyboard.press_and_release(self.rectangles[4].command)
-                    # elif ligne == "btn6":
-                    #     keyboard.press_and_release(self.rectangles[5].command)
+                                if i in self.special_keys:
+                                    keyboard.press_and_release(i)
+                                    print(1)
+                                    
+                                else:
+                                    keyboard.write(i)
+                                    print(2)
+                                sleep(0.1)
+                        
+                                        
+                              
+                  
 
                     
 

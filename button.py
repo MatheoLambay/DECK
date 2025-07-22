@@ -5,7 +5,9 @@ class Button():
 	def __init__(self,screen,x, y,text,text_color,font_size,center_pos = "topleft"):
 		
 		self.screen = screen
-
+		self.x = x
+		self.y = y
+		self.center_pos = center_pos
 		self.text = text
 		self.text_color = text_color
 		self.font_size = font_size
@@ -14,25 +16,27 @@ class Button():
 		self.rect = self.data.get_rect()
 			
 			
-		if center_pos == "topleft":
-			self.rect.topleft = (x,y)
-		elif center_pos == "topright":
-			self.rect.topright = (x,y)
-		elif center_pos == "bottomright":
-			self.rect.bottomright = (x,y)
-		elif center_pos == "bottomleft":
-			self.rect.bottomleft = (x,y)
-		elif center_pos == "center":
-			self.rect.center = (x,y)
-		else:
-			print('position error')
+		self.get_pos(center_pos)
 
 		self.clicked = False
 		self.activated = None
 	
+	def get_pos(self,center_pos):
+		if center_pos == "topleft":
+			self.rect.topleft = (self.x,self.y)
+		elif center_pos == "topright":
+			self.rect.topright = (self.x,self.y)
+		elif center_pos == "bottomright":
+			self.rect.bottomright = (self.x,self.y)
+		elif center_pos == "bottomleft":
+			self.rect.bottomleft = (self.x,self.y)
+		elif center_pos == "center":
+			self.rect.center = (self.x,self.y)
+		else:
+			print('position error')
 
 	def draw(self):
-	
+		self.get_pos(self.center_pos)
 		self.activated = True
 		self.data_font = pygame.font.Font("freesansbold.ttf", self.font_size)
 		self.data = self.data_font.render(self.text,True,self.text_color)

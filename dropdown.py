@@ -24,14 +24,21 @@ class dropDown:
     
 
     def draw(self):
+        self.Rect = self.data_text.get_rect(topleft=(self.x,self.y))
         self.screen.blit(self.data_text, self.Rect)
        
+        x = self.Rect.bottomleft[0]
+        y = self.Rect.bottomleft[1] + 10
         for i in self.btns:
+        
+            i.x = x
+            i.y = y
             i.draw()
             if i == self.current_option:
                 i.text_color = "green"
             else:
                 i.text_color = "white"
+            x = i.rect.topright[0] + 10
 
     def detect(self):
         for i in self.btns:
