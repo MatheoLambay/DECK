@@ -1,22 +1,20 @@
 {
     "btn1": {
-        "key": [
-            "nigga",
-            "return"
-        ],
-        "mode": "MACRO"
+        "key": "j",
+        "mode": "TOUCHE",
+        "color": "red"
     },
     "btn2": {
-        "key": [
-            "t",
-            "caca",
-            "return"
-        ],
-        "mode": "MACRO"
+        "key": "k",
+        "mode": "TOUCHE",
+        "color": "green"
     },
     "btn3": {
-        "key": "y",
-        "mode": "TOUCHE"
+        "key": [
+            "ddd"
+        ],
+        "mode": "MACRO",
+        "color": "blue"
     },
     "btn4": {
         "key": [
@@ -33,14 +31,17 @@
             "b",
             "escape"
         ],
-        "mode": "MACRO"
+        "mode": "MACRO",
+        "color": "green"
     },
     "btn5": {
         "key": "F5",
-        "mode": "TOUCHE"
+        "mode": "TOUCHE",
+        "color": "green"
     },
     "btn6": {
         "key": "F6",
-        "mode": "TOUCHE"
+        "mode": "TOUCHE",
+        "color": "green"
     }
 }

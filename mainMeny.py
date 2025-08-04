@@ -40,19 +40,16 @@ class mainMenu:
         # else:
         #     with open(self.config_default_path, "r") as f:
         #         self.data = json.load(f)
-        with open('config.json', "r") as f:
-            self.data = json.load(f)
+        self.read_json()
 
                 
-        
-
         self.rectangles = [
-            Rectangle(self.screen,10,10,200,380,"btn1",self.data["btn1"]["key"],self.data["btn1"]["mode"]),
-            Rectangle(self.screen,220,10,200,380,"btn2",self.data["btn2"]["key"],self.data["btn2"]["mode"]),
-            Rectangle(self.screen,430,10,200,380,"btn3",self.data["btn3"]["key"],self.data["btn3"]["mode"]),
-            Rectangle(self.screen,10,400,200,380,"btn4",self.data["btn4"]["key"],self.data["btn4"]["mode"]),
-            Rectangle(self.screen,220,400,200,380,"btn5",self.data["btn5"]["key"],self.data["btn5"]["mode"]),
-            Rectangle(self.screen,430,400,200,380,"btn6",self.data["btn6"]["key"],self.data["btn6"]["mode"])
+            Rectangle(self.screen,10,10,200,380,"btn1",self.data["btn1"]["color"],self.data["btn1"]["key"],self.data["btn1"]["mode"]),
+            Rectangle(self.screen,220,10,200,380,"btn2",self.data["btn2"]["color"],self.data["btn2"]["key"],self.data["btn2"]["mode"]),
+            Rectangle(self.screen,430,10,200,380,"btn3",self.data["btn3"]["color"],self.data["btn3"]["key"],self.data["btn3"]["mode"]),
+            Rectangle(self.screen,10,400,200,380,"btn4",self.data["btn4"]["color"],self.data["btn4"]["key"],self.data["btn4"]["mode"]),
+            Rectangle(self.screen,220,400,200,380,"btn5",self.data["btn5"]["color"],self.data["btn5"]["key"],self.data["btn5"]["mode"]),
+            Rectangle(self.screen,430,400,200,380,"btn6",self.data["btn6"]["color"],self.data["btn6"]["key"],self.data["btn6"]["mode"])
         ]
         self.btns = ("btn1","btn2","btn3","btn4","btn5","btn6",)
 
@@ -67,18 +64,13 @@ class mainMenu:
         self.last_try_time = 0
         self.retry_interval = 2  
 
-        self.last_time = 0
-        self.interval = 100
-
 
         self.special_keys = [
             # Lettres
             "a","b","c","d","e","f","g","h","i","j","k","l","m",
             "n","o","p","q","r","s","t","u","v","w","x","y","z",
-
             # Chiffres
             "0","1","2","3","4","5","6","7","8","9",
-
             # Touches spéciales
             "enter", "return",
             "shift", "shift left", "shift right",
@@ -101,10 +93,8 @@ class mainMenu:
             "windows",
             "command",
             "option",
-
             # Touches de fonction
             "f1","f2","f3","f4","f5","f6","f7","f8","f9","f10","f11","f12",
-
             # Ponctuation et symboles
             "space", "enter", "tab",
             "minus", "equal",
@@ -113,16 +103,14 @@ class mainMenu:
             "semicolon", "apostrophe",
             "grave",        # touche "accent grave" (`)
             "comma", "dot", "slash",
-
             # Pavé numérique (numpad)
             "num 0", "num 1", "num 2", "num 3", "num 4", "num 5", "num 6", "num 7", "num 8", "num 9",
             "num decimal", "num divide", "num multiply", "num subtract", "num add", "num enter"
         ]
 
-
-
-
-        
+    def read_json(self):
+        with open('config.json', "r") as f:
+            self.data = json.load(f)
 
     def detect_serial(self):
         now = time.time()
@@ -170,12 +158,13 @@ class mainMenu:
             
                 
     def open(self, screen):
-        screen.fill((255,255,255))
+        self.screen.fill("#222831")
         
     def close(self):
         pass
 
     def update(self, event, manager,key):
+        self.read_json()
         self.screen.fill("#222831")
        
 
@@ -194,18 +183,22 @@ class mainMenu:
             pygame.draw.rect(self.screen,"grey",self.edit_rect)
 
             for i in self.rectangles:
+
+                """update rectangle data"""
                 i.mode = self.data[i.name]["mode"]
                 i.command = self.data[i.name]["key"]
+                i.color = self.data[i.name]["color"]
+
+                """detect click on rectangle"""
                 if(i.detect()):
-                    manager.push_menu(Edit(self.screen,i.command,i.name,i.mode,self.data))
+                    manager.push_menu(Edit(self.screen,i.command,i.name,i.color,i.mode,self.data))
 
             for i in self.rectangles:
                 i.draw()
                      
             try:
                 if self.ser.in_waiting > 0:
-                    current_time = pygame.time.get_ticks()
-                
+                    
                     ligne = self.ser.readline().decode('utf-8').strip()
                     if ligne in self.btns:
                         if self.rectangles[self.btns.index(ligne)].mode == "TOUCHE":
@@ -215,20 +208,13 @@ class mainMenu:
                             for i in self.rectangles[self.btns.index(ligne)].command:
                                 if i in self.special_keys:
                                     keyboard.press_and_release(i)
-                                    print(1)
-                                    
                                 else:
                                     keyboard.write(i)
-                                    print(2)
-                                sleep(0.1)
+                                    sleep(0.1)
+                                
                         
                                         
-                              
-                  
-
-                    
-
-
+        
             except serial.SerialException as e:
                 print(f"Erreur port série détectée : {e}")
                 try:
@@ -240,30 +226,18 @@ class mainMenu:
                     
            
             
-             
-
-
-
-
-
-
-
-
-
-
-
-
 class Rectangle:
-    def __init__(self,screen,x,y,l,h,name,command,mode):
+    def __init__(self,screen,x,y,l,h,name,color,command,mode):
         self.screen = screen
         self.command = command
         self.mode = mode
         self.name = name
         self.rect = pygame.Rect(x,y,l,h)
+        self.color = color
 
     def draw(self):
         
-        pygame.draw.rect(self.screen,"green",self.rect)
+        pygame.draw.rect(self.screen,self.color,self.rect)
         data_font = pygame.font.Font("freesansbold.ttf", 20)
 
      
@@ -271,9 +245,10 @@ class Rectangle:
         textRect = data_text.get_rect(center=(self.rect.midtop[0],self.rect.midtop[1]+30))
         self.screen.blit(data_text, textRect)
 
-        data_text = data_font.render(str(self.command),True,(0,0,0))
-        textRect = data_text.get_rect(center = (self.rect.center[0],self.rect.center[1])) 
-        self.screen.blit(data_text, textRect)
+        if self.mode == "TOUCHE":
+            data_text = data_font.render(str(self.command).upper(),True,(0,0,0))
+            textRect = data_text.get_rect(center = (self.rect.center[0],self.rect.center[1])) 
+            self.screen.blit(data_text, textRect)
 
 
     def detect(self):

@@ -5,16 +5,16 @@ import json
 from inputBox import InputBox
 
 class Edit(dropDown):
-    def __init__(self,screen,command,name,mode,data):
+    def __init__(self,screen,command,name,color,mode,data):
         self.screen = screen
         self.command = command
         self.name = name
-      
         self.data = data
 
         self.rect = pygame.Rect(30,30,300,500)
+        self.rect_color = color
 
-        self.dropdown = dropDown(screen,self.rect.topright[0],self.rect.topright[1],"MODE :",("TOUCHE","MACRO"),mode)
+        self.dropdown = dropDown(screen,self.rect.topright[0],self.rect.topright[1],"OPTIONS:",("TOUCHE","MACRO","COLOR"),mode)
 
         self.save_btn = Button(self.screen,self.rect.bottomleft[0],self.rect.bottomleft[1],"SAVE","white",30)
         self.back_btn = Button(self.screen,self.save_btn.rect.topright[0]+10,self.save_btn.rect.topright[1],"BACK","white",30)
@@ -26,8 +26,11 @@ class Edit(dropDown):
         self.macro_sequence = []
         self.rect_macro_sequence = []
 
+        self.color = ("GREEN","RED","BLUE")
+
         self.dropdown_macro = dropDown(self.screen,0,0,"+ :",("TEXT","ACTION","DELETE"),"TEXT")
-        self.test = InputBox(self.screen,400,400,200,30)
+        self.dropdown_color = dropDown(self.screen,0,0,"Select : ",self.color,color.upper())
+        self.input_box = InputBox(self.screen,400,400,200,30)
 
         if mode == "MACRO":
             self.macro_sequence = command
@@ -38,14 +41,14 @@ class Edit(dropDown):
         
 
     def open(self, screen):
-        self.screen.fill((0,0,0))
+        self.screen.fill("#222831")
 
     def close(self):
         pass
 
     def update(self, event, manager,key):
         self.screen.fill("#222831")
-        pygame.draw.rect(self.screen,"green",self.rect)
+        pygame.draw.rect(self.screen,self.rect_color,self.rect)
 
         self.dropdown.draw()
         self.dropdown.detect()
@@ -67,10 +70,15 @@ class Edit(dropDown):
            self.draw_macro(key)
            self.edit_touche = False
 
+        if self.dropdown.current_option.text == "COLOR":
+            self.draw_color()
+
+        """back button"""
         self.back_btn.draw()
         if self.back_btn.detect():
             manager.pop_menu()
 
+        """save button"""
         self.save_btn.draw()
         if self.save_btn.detect():
             if self.dropdown.current_option.text == "TOUCHE":
@@ -82,13 +90,19 @@ class Edit(dropDown):
                 self.data[self.name]["key"] = self.macro_sequence
                 self.data[self.name]["mode"] = "MACRO"
 
-            
+            self.data[self.name]["color"] = self.rect_color
             with open("config.json","w") as w:
                 json.dump(self.data, w, indent=4)
             manager.pop_menu()
             
-    
-    
+    """set rect color"""
+    def draw_color(self):
+        self.dropdown_color.x = self.dropdown.Rect[0]
+        self.dropdown_color.y = self.dropdown.Rect[1]+70
+        self.dropdown_color.draw()
+        self.dropdown_color.detect()
+        self.rect_color = self.dropdown_color.current_option.text.lower()
+        
           
     def draw_touch(self,key):
         
@@ -115,27 +129,18 @@ class Edit(dropDown):
 
     def draw_macro(self,key):
         
-        # self.btn_macro.x = self.dropdown.Rect[0]
-        # self.btn_macro.y = self.dropdown.Rect[1]+70
-        # self.btn_macro.draw()
-        
-        # if self.btn_macro.detect():
-        #     self.edit_macro = True
-        
-        
-    
         self.dropdown_macro.x = self.dropdown.Rect[0]
         self.dropdown_macro.y = self.dropdown.Rect[1]+70
         self.dropdown_macro.draw()
         self.dropdown_macro.detect()
 
         if self.dropdown_macro.current_option.text == "TEXT":
-            self.test.rect.x = self.dropdown_macro.Rect.bottomleft[0]
-            self.test.rect.y = self.dropdown_macro.Rect.bottomleft[1]+40
+            self.input_box.rect.x = self.dropdown_macro.Rect.bottomleft[0]
+            self.input_box.rect.y = self.dropdown_macro.Rect.bottomleft[1]+40
 
-            self.test.update()
-            self.test.draw()
-            result = self.test.handle_text_input(key)
+            self.input_box.update()
+            self.input_box.draw()
+            result = self.input_box.handle_text_input(key)
             if  result != None:
                 if self.editing == None:
                     self.macro_sequence.append(result)
@@ -143,7 +148,7 @@ class Edit(dropDown):
                     self.macro_sequence[self.editing] = result
                     
                     self.editing = None
-                self.test.reset()
+                self.input_box.reset()
 
         if self.dropdown_macro.current_option.text == "ACTION":
             data_text = self.data_font.render("Press Key...", True, (255,255,255))
@@ -158,15 +163,12 @@ class Edit(dropDown):
                     self.editing = None
                     
         
-
         if self.dropdown_macro.current_option.text == "DELETE":
             if self.editing != None:
                 self.macro_sequence.pop(self.editing)
                 self.editing = None
 
    
-
-
 
         x = self.sep_rect.topright[0]
         y = self.sep_rect.topright[1]
