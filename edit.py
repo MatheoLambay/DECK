@@ -120,7 +120,7 @@ class Edit(dropDown):
 
         if self.edit_touche:
             self.btn_touche.text = "Select Key..."
-            if key != None:
+            if key is not None:
                 self.command = key
                 self.edit_touche = False
         else:
@@ -141,8 +141,8 @@ class Edit(dropDown):
             self.input_box.update()
             self.input_box.draw()
             result = self.input_box.handle_text_input(key)
-            if  result != None:
-                if self.editing == None:
+            if  result is not None:
+                if self.editing is None:
                     self.macro_sequence.append(result)
                 else:
                     self.macro_sequence[self.editing] = result
@@ -154,8 +154,8 @@ class Edit(dropDown):
             data_text = self.data_font.render("Press Key...", True, (255,255,255))
             textRect = data_text.get_rect(topleft=(self.dropdown_macro.Rect.bottomleft[0],self.dropdown_macro.Rect.bottomleft[1]+40))
             self.screen.blit(data_text, textRect)
-            if key != None:
-                if self.editing == None:
+            if key is not None:
+                if self.editing is None:
                     self.macro_sequence.append(key)
                     
                 else:
@@ -164,7 +164,7 @@ class Edit(dropDown):
                     
         
         if self.dropdown_macro.current_option.text == "DELETE":
-            if self.editing != None:
+            if self.editing is not None:
                 self.macro_sequence.pop(self.editing)
                 self.editing = None
 
@@ -195,7 +195,7 @@ class Edit(dropDown):
             
             pos = pygame.mouse.get_pos()
             if self.rect_macro_sequence[i].collidepoint(pos):
-                if pygame.mouse.get_pressed()[0] == 1 and self.clicked == False:
+                if pygame.mouse.get_pressed()[0] == 1 and not self.clicked:
                    
                     self.editing = i
                     # print(self.editing)

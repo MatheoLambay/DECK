@@ -6,9 +6,9 @@ from serial.tools.list_ports import comports
 from edit import Edit
 from button import Button
 import time
-import os
-import sys
 from time import sleep
+import threading
+from twitchchat import TwitchChat
 
 class mainMenu:
     def __init__(self,screen):
@@ -107,6 +107,28 @@ class mainMenu:
             "num 0", "num 1", "num 2", "num 3", "num 4", "num 5", "num 6", "num 7", "num 8", "num 9",
             "num decimal", "num divide", "num multiply", "num subtract", "num add", "num enter"
         ]
+        
+        
+        HOST = 'irc.chat.twitch.tv'
+        PORT = 6667
+        NICK = 'gensbonbon_'  # ton pseudo Twitch (en minuscules)
+        TOKEN = 'oauth:uv1bech8t3oebugpzyj0bwr7zaxb9l'  # le token que tu as récupéré
+        CHANNEL = '#Gensbonbon_'  # avec un # devant
+
+        self.XQc = TwitchChat(host=HOST, port=PORT, nick=NICK, token=TOKEN, channel=CHANNEL)
+        self.stop_twitch = threading.Event()
+        self.XQc.connect()
+        threading.Thread(target=self.twitch_reader, daemon=True).start()
+
+    def twitch_reader(self):
+        
+        while not self.stop_twitch.is_set():
+            test = self.XQc.read()
+            
+            if self.ser_connected and test != None:
+                text = (test + "\n")
+                print(text)
+                self.ser.write(str(text).encode('utf-8'))
 
     def read_json(self):
         with open('config.json', "r") as f:
@@ -155,6 +177,10 @@ class mainMenu:
         self.ser = None
         self.ser_connected = False
         return False
+    
+    def serial_send(self, data):
+        if self.ser_connected:
+            self.ser.write(data.encode())
             
                 
     def open(self, screen):

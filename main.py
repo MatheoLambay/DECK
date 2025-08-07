@@ -1,5 +1,4 @@
 import pygame
-
 import threading
 import os
 import sys
@@ -7,9 +6,11 @@ import pystray
 from PIL import Image, ImageDraw
 import win32gui
 import win32con
-
+from twitchchat import TwitchChat
 from menu_manager import menuManager
 from mainMeny import mainMenu
+from serialCOM import SerialCom
+
 
 def create_systray_image():
     try:
@@ -56,11 +57,14 @@ def hide_window():
 	win32gui.ShowWindow(hwnd, win32con.SW_MINIMIZE)
 	win32gui.ShowWindow(hwnd, win32con.SW_HIDE)
 
+
+
+
+
 if getattr(sys, 'frozen', False):
     base_dir = sys._MEIPASS
 else:
     base_dir = os.path.dirname(os.path.abspath(__file__))
-
 logo_path = os.path.join(base_dir, 'logo.png')
 icon_image = pygame.image.load(logo_path)
 
@@ -70,14 +74,16 @@ pygame.display.set_caption("Mathéo DECK")
 pygame.display.set_icon(icon_image)
 
 menu_manager = menuManager()
+
 # Lance l'icône systray
 # run_systray(show_window)
-
 # # Au démarrage : cache la fenêtre (minimise + cache)
 # hide_window()
+
 menu_manager.push_menu(mainMenu(menu_manager.screen))
 
-
+# ser = SerialCom(port="COM3", baudrate=115200)  # Mets le port adapté à ta config
+# ser.connect()
 
 run = True
 while run:
@@ -93,6 +99,7 @@ while run:
     current_menu = menu_manager.get_current_menu()
     if current_menu:
         current_menu.update(key,menu_manager,key)
+    
 
     pygame.display.update()
 
